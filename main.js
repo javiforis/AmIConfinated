@@ -25,6 +25,53 @@ function(err){
     console.error(err);
 });      
 
+let distritoSeleccionado = "2";
+let selectorDistritos = document.querySelector("#districts");
+selectorDistritos.addEventListener("change", (evento) => {
+   distritoSeleccionado = evento.target.value;
+
+   let b = 0;
+})
+
+let a = "https://apifetcher.herokuapp.com/?id=f22c3f43-c5d0-41a4-96dc-719214d56968&q=asdsa?id=f22c3f43-c5d0-41a4-96dc-719214d56968&filters=" + JSON.stringify({"municipio_distrito": distritoSeleccionado});
+
+fetch("https://apifetcher.herokuapp.com/?id=f22c3f43-c5d0-41a4-96dc-719214d56968&q=asdsa?id=f22c3f43-c5d0-41a4-96dc-719214d56968&filters=" + JSON.stringify({"municipio_distrito": distritoSeleccionado})).then(d => d.json()).then(d => {console.log(d)
+  
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*fetch('https://api.covid19tracking.narrativa.com/api/2020-03-22/country/spain/region/madrid')
   .then(response => response.json())
   .then(data => console.log(data));
