@@ -1,6 +1,6 @@
 *,*::before,*::after {
     margin: 0;
-    padding: 0;
+    padding: 6px;
     box-sizing: border-box;
 }
 
@@ -30,6 +30,7 @@ div {
     display: flex;
     height: 150px;
     width: 100%;
+    
 }
 #result {
     align-items: center;
@@ -47,3 +48,6 @@ h1 {
     justify-self: center;
 }
  */
+ .ct-chart-line {
+    background-color: white;
+}

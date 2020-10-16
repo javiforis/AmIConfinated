@@ -41,8 +41,8 @@ let data = {
 function pintarDatos(data)
 {
       let options = {
-        width: 1200,
-        height: 900
+        width: 320,
+        height: 150
       };
       
       // Create a new line chart object where as first parameter we pass in a selector
