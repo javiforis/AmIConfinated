@@ -1,0 +1,49 @@
+*,*::before,*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face{
+    font-family: PopLight;
+    src: url(./media/fonts/Poppins-Light.ttf);
+}
+@font-face{
+    font-family: PopRegular;
+    src: url(./media/fonts/Poppins-Regular.ttf);
+}
+
+body {
+    font-family: PopLight;
+    background-color: black;
+}
+
+main {
+    background-color: black;
+    flex-direction: column;
+}
+
+div {
+    font-family: PopRegular;
+    color: white;
+    font-size: 50px;
+    display: flex;
+    height: 150px;
+    width: 100%;
+}
+#result {
+    align-items: center;
+    vertical-align:middle;
+}
+h1 {
+    width: 100%;
+    text-align: center;
+}
+
+/* .yesOrNo {
+    display: flex;
+    width: 100%;
+    align-self: center;
+    justify-self: center;
+}
+ */
