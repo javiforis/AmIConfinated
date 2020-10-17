@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¿AmIconfinated?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <script defer src="main.js"></script>
@@ -23,32 +24,34 @@
 <body>
     <main>
         <div id="result">
-            <H1 class="yesOrNo">YES</H1>
+            <H1 class="yesOrNo">SI</H1>
         </div>
-        <label for="districts">Choose a district</label>
+        <label for="districts">Elige un distrito</label>
                 <select name="districts" id="districts">
-                    <option value="0">Madrid-Retiro</option>
-                    <option value="1">Madrid-Salamanca</option>
-                    <option value="2">Madrid-Centro</option>
-                    <option value="3">Madrid-Arganzuela</option>
-                    <option value="4">Madrid-Chamartín</option>
-                    <option value="5">Madrid-Tetuán</option>
-                    <option value="6">Madrid-Chamberí</option>
-                    <option value="7">Madrid-Fuencarral-El Pardo</option>
-                    <option value="8">Madrid-Moncloa-Aravaca</option>
-                    <option value="9">Madrid-Latina</option>
-                    <option value="10">Madrid-Carabanchel</option>
-                    <option value="11">Madrid-Usera</option>
-                    <option value="12">Madrid-Puente de Vallecas</option>
-                    <option value="13">Madrid-San Blas - Canillejas</option>
-                    <option value="14">Madrid-Barajas</option>
-                    <option value="15">Madrid-Moratalaz</option>
-                    <option value="16">Madrid-Ciudad Lineal</option>
-                    <option value="17">Madrid-Hortaleza</option>
-                    <option value="18">Madrid-Villaverde</option>
-                    <option value="19">Madrid-Villa de Vallecas</option>
-                    <option value="20">Madrid-Vicálvaro</option>
+                    <option value="Madrid-Retiro">Madrid-Retiro</option>
+                    <option value="Madrid-Salamanca">Madrid-Salamanca</option>
+                    <option value="Madrid-Centro">Madrid-Centro</option>
+                    <option value="Madrid-Arganzuela">Madrid-Arganzuela</option>
+                    <option value="Madrid-Chamartín">Madrid-Chamartín</option>
+                    <option value="Madrid-Tetuán">Madrid-Tetuán</option>
+                    <option value="Madrid-Chamberí">Madrid-Chamberí</option>
+                    <option value="Madrid-Fuencarral-El Pardo">Madrid-Fuencarral-El Pardo</option>
+                    <option value="Madrid-Moncloa-Aravaca">Madrid-Moncloa-Aravaca</option>
+                    <option value="Madrid-Latina">Madrid-Latina</option>
+                    <option value="Madrid-Carabanchel">Madrid-Carabanchel</option>
+                    <option value="Madrid-Usera">Madrid-Usera</option>
+                    <option value="Madrid-Puente de Vallecas">Madrid-Puente de Vallecas</option>
+                    <option value="Madrid-San Blas - Canillejas">Madrid-San Blas - Canillejas</option>
+                    <option value="Madrid-Barajas">Madrid-Barajas</option>
+                    <option value="Madrid-Moratalaz">Madrid-Moratalaz</option>
+                    <option value="Madrid-Ciudad Lineal">Madrid-Ciudad Lineal</option>
+                    <option value="Madrid-Hortaleza">Madrid-Hortaleza</option>
+                    <option value="Madrid-Villaverde">Madrid-Villaverde</option>
+                    <option value="Madrid-Villa de Vallecas">Madrid-Villa de Vallecas</option>
+                    <option value="Madrid-Vicálvaro">Madrid-Vicálvaro</option>
                 </select>
+            <p id="tasa"></p>
+            <p id="fecha"></p>
         <div id="map">
         </div>
         <div id="graphic" class="ct-chart ct-perfect-fourth">

@@ -15,12 +15,22 @@
 
 body {
     font-family: PopLight;
-    background-color: black;
+    background-color: rgb(0, 0, 0);
 }
 
 main {
     background-color: black;
     flex-direction: column;
+}
+main label:nth-child(2)
+{
+    color: white;
+}
+
+#districts{
+    background-color: rgb(41, 38, 38);
+    color: white;
+    font-family: PopRegular;
 }
 
 div {
@@ -30,7 +40,9 @@ div {
     display: flex;
     height: 150px;
     width: 100%;
-    
+}
+#map{
+    margin-top: .5em;
 }
 #result {
     align-items: center;
@@ -40,6 +52,25 @@ h1 {
     width: 100%;
     text-align: center;
 }
+p{
+    background-color: rgb(41, 38, 38);
+    margin-top: .5em;
+    color: white;
+}
+span #enum{
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 1em;
+}
+.rateSI{
+    font-weight: bold;
+    color: crimson;
+    font-size: 1.5em;
+}
+.rateNO{
+    font-weight: bold;
+    color: white;
+    font-size: 1.5em;
+}
 
 /* .yesOrNo {
     display: flex;
@@ -48,6 +79,44 @@ h1 {
     justify-self: center;
 }
  */
- .ct-chart-line {
-    background-color: white;
+
+
+.ct-chart-line {
+    width: 100%;
+    height: 40vh;
+    background-color: rgb(41, 38, 38);
+}
+.ct-series-a .ct-line,
+.ct-series-a .ct-point {
+  stroke: red;
+}
+
+.ct-label.ct-horizontal{
+    visibility: hidden;
+}
+.ct-label.ct-vertical{
+    color: white;
+}
+.ct-grid {
+    stroke: rgba(180, 180, 180, 0.2); 
+}
+.ct-line{
+    stroke-width: 1px;
+}
+.ct-point{
+    stroke-width: 5px;
+}
+@media only screen and (min-width: 768px)
+{
+    .ct-label.ct-horizontal{
+        color: white;
+        /* transform: rotate(-90deg); */
+        visibility: visible;
+    }
+}
+@media only screen and (min-width: 1280px)
+{
+    .ct-label.ct-horizontal{
+        transform: rotate(0deg);
+    }
 }
