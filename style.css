@@ -48,7 +48,7 @@ div {
     align-items: center;
     vertical-align:middle;
 }
-h1 {
+h1{
     width: 100%;
     text-align: center;
 }
@@ -56,6 +56,9 @@ p{
     background-color: rgb(41, 38, 38);
     margin-top: .5em;
     color: white;
+}
+#nombreDistrito{
+    font-size: 1.5em;
 }
 span #enum{
     font-family: 'Open Sans Condensed', sans-serif;
