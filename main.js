@@ -13,7 +13,22 @@ let data = {
 };
 //Latitud y longitud de la localización actual
 let browserLat;
-let browserLong;  
+let browserLong;
+//Fecha actual
+let fechaHoy = new Date();
+//Clase para almacenar consultas en la caché
+class DistritoData{
+  constructor(distrito, fechaConsulta, calle, numero, fechaInforme, tasa, dataObject)
+  {
+    this.distrito       = distrito;
+    this.fechaConsulta  = fechaConsulta;
+    this.calle          = calle;
+    this.numero         = numero;
+    this.fechaInforme   = fechaInforme;
+    this.tasa           = tasa;
+    this.dataObject     = dataObject;
+  }
+};
 
 //------------------------ MAPA -----------------------//
 let map = L.map('map', {});
@@ -50,10 +65,53 @@ cargaMapa.then(() => {
   fetch(queryString)
         .then(response => response.json())
         .then(data => {
-          console.log(data);
-          rellenarDatosDistrito(data);
+          //console.log(data);
+          let datoAPintar = comprobarConsultaDistrito(data);
+          if (datoAPintar)
+          {
+            //Se ha detectado una consulta para el mismo distrito en la misma semana
+            pintar(datoAPintar);
+          }//if
+          else
+          {
+            //Hay que lanzar consulta pues no hay datos en la caché para utilizar
+            rellenarDatosDistrito(data);
+          }//else
         });
 })
+
+function comprobarConsultaDistrito(data)
+{
+  let datosCache = JSON.parse(localStorage.getItem("cacheCovid19"));
+
+  if (datosCache !== null)
+  {
+    //Existen datos cacheados
+    datosCache.map((dato) => {
+      if (esMismoDistrito(dato, data) && esMismaSemana(dato))
+      {
+        //Hay un dato en la caché para el mismo distrito en la misma semana
+        //No hay que lanzar consulta sino que se muestran los datos de la consulta cacheada
+        return dato;
+      }//if
+    });
+  }//if
+  //No existen datos cacheados o no se ha encontrado ninguno para el mismo distrito en la misma semana
+  //Hay que lanzar consulta
+  return null;
+}//comprobarConsultaDistrito
+
+//Función para detectar si el distrito actual se encuentra en la caché
+function esMismoDistrito(dato, data)
+{
+  return dato.distrito == data.address.city_district;
+}//esMismoDistrito
+
+//Función para detectar si la fecha actual se encuentra en la misma semana
+function esMismaSemana(dato)
+{
+  return dato.fechaConsulta.getTime()/1000 >= fechaHoy.getTime() / 1000 - (86400 * (fechaHoy.getDay()+1));
+}//esMismaSemana
 
 //Función para rellenar todos los datos de la página para el distrito actual
 function rellenarDatosDistrito(datosLocalizacion)
@@ -62,39 +120,74 @@ function rellenarDatosDistrito(datosLocalizacion)
   document.querySelector("#nombreDistrito").innerHTML = `${datosLocalizacion.address.road}, ${datosLocalizacion.address.house_number}. Distrito: ${datosLocalizacion.address.city_district}`;
   fetch(queryString).then(d => d.json()).then(d =>  {
     console.log(d);
-    if (parseFloat(d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias) > 500)
+    //Creación del objeto de la caché
+    d.result.records.map((fecha) => {
+      data.labels.unshift(formateaFecha(fecha.fecha_informe.split("T")[0]));
+      data.series[0].unshift(parseFloat(fecha.tasa_incidencia_acumulada_ultimos_14dias));
+    });
+    let datoNuevoCache = new DistritoData(datosLocalizacion.address.city_district,
+                                          fechaHoy,
+                                          datosLocalizacion.address.road,
+                                          datosLocalizacion.address.house_number,
+                                          d.result.records[0].fecha_informe,
+                                          d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias,
+                                          data);
+
+                                          //console.log(datoNuevoCache);
+
+    //let datosCache = localStorage.getItem(JSON.parse("cacheCovid19"));
+    let datosCache = localStorage.getItem("cacheCovid19");
+
+    if (datosCache !== null)
+    {
+      datosCache.push(datoNuevoCache);
+    }//if
+    else
+    {
+      localStorage.setItem("cacheCovid19", JSON.stringify(datoNuevoCache));
+    }//else
+    
+    pintar(datoNuevoCache);
+  })
+}
+
+function pintar(datoNuevoCache)
+{
+  if (parseFloat(datoNuevoCache.tasa) > 500)
     {
       //La tasa de incidencia es superior al límite luego está confinado
       document.querySelector("h1").innerText = "SI";
       //Se escribe en el párrafo correspondiente la tasa de incidencia más actual
-      document.querySelector("#tasa").innerHTML = `<span id="enun">Tasa de incidencia acumulada durante los últimos 14 días: </span><span class="rateSI">${d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias}</span>`;
+      document.querySelector("#tasa").innerHTML = `<span id="enun">Tasa de incidencia acumulada durante los últimos 14 días: </span><span class="rateSI">${datoNuevoCache.tasa}</span>`;
     }//if
     else
     {
       //No hay confinamiento
       document.querySelector("h1").innerText = "NO";
       //Se escribe en el párrafo correspondiente la tasa de incidencia más actual
-      document.querySelector("#tasa").innerHTML = `<span id="enun">Tasa de incidencia acumulada durante los últimos 14 días: </span><span class="rateNO">${d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias}</span>`;
+      document.querySelector("#tasa").innerHTML = `<span id="enun">Tasa de incidencia acumulada durante los últimos 14 días: </span><span class="rateNO">${datoNuevoCache.tasa}</span>`;
     }//else
     
     //Se escribe en el párrafo correspondiente la fecha del dato más actual
-    document.querySelector("#fecha").innerHTML = `<span>Fecha del informe: </span>${d.result.records[0].fecha_informe}`;
+    document.querySelector("#fecha").innerHTML = `<span>Fecha del informe: </span>${datoNuevoCache.fechaInforme}`;
     /*
       Se rellenan las series de datos para el gráfico a partir de cada informe existente.
       En los datos devueltos por la API hay un array con los datos para el municipio seleccionado para cada uno de los informes realizados en distintas fechas
     */
+    pintarDatos(datoNuevoCache.dataObject);
+    /*
     data.labels = [];
     data.series = [[]];
-    d.result.records.map((fecha) => {
+    datoNuevoCache.arraydata.map((fecha) => {
       //Se rellena la fecha eliminando la hora. El gráfico necesita los datos ordenados al revés de como los proporciona la API por lo que se usa unshift para añadir por la cabeza y no push que los añade por la cola. Se formatea la fecha para poner los meses en letra y acortarla
-      data.labels.unshift(formateaFecha(fecha.fecha_informe.split("T")[0]));
+      data.labels.unshift(formateaFecha(fecha.fechaInforme.split("T")[0]));
       //Se rellena la tasa transformando la cadena en un número decimal con parseFloat
-      data.series[0].unshift(parseFloat(fecha.tasa_incidencia_acumulada_ultimos_14dias));
+      data.series[0].unshift(parseFloat(fecha.tasa));
     });
     //Una vez listos los datos se manda pintar el gráfico                                
-    pintarDatos(data);
-  })
-}
+    pintarDatos(data);*/
+}//pintar
+
 //Función que pinta el gráfico a partir de los datos de las series
 function pintarDatos(data)
 {
@@ -185,6 +278,13 @@ function formateaFecha(fecha)
   }//switch
   return fechaFormateada;
 }//formateaFecha
+
+
+
+
+
+
+
 
 // //Captura del evento change que se dispara cada vez que el usuario cambie el valor del selector de distritos
 // selectorDistritos.addEventListener("change", (evento) => {
