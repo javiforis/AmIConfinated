@@ -123,3 +123,6 @@ span #enum{
         transform: rotate(0deg);
     }
 }
+.leaflet-control-container {
+    display: none;
+}
