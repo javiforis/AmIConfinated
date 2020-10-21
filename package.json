@@ -1,0 +1,17 @@
+{
+  "name": "AmIConfinated",
+  "version": "1.0.0",
+  "description": "Prueba de la aplicacion de consulta de Covid-19",
+  "main": "main.js",
+  "scripts": {
+    "test": "test",
+    "e2e": "cypress open"
+  },
+  "author": "El grupo calavera",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^2.1.0",
+    "mocha": "^5.0.4",
+    "mochawesome": "^3.0.2"
+  }
+}
