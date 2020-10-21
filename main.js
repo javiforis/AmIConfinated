@@ -1,3 +1,6 @@
+//Comentar esta función para activar las trazas
+console.log = () => {};
+
 //--------------- VARIABLES GLOBALES ------------------//
 //Cadena que se utilizará para lanzar la consulta a la API
 let queryString = "";
@@ -47,12 +50,8 @@ const cargaMapa = new Promise((response, reject) => {
     browserLat =  position.coords.latitude;
     browserLong = position.coords.longitude;
 
-    if ((browserLat == undefined)||(browserLong == undefined))
-    {
-      //Coordenadas no disponibles
-      //No ha sido posible obtener su posición
-      reject();
-    }//if
+    console.log(`Obtenida latitud: ${browserLat}`);
+    console.log(`Obtenida longitud: ${browserLong}`);
      
     marker_actual = L.marker([browserLat,browserLong]).addTo(map);
     marker_actual.bindPopup('<b>Hola </b><br>Tu estas aqui').openPopup();
@@ -64,6 +63,7 @@ const cargaMapa = new Promise((response, reject) => {
   }, 
   function(err){
     console.error(err);
+    //No se han podido obtener las coordenadas
   }); 
 })
 
@@ -74,17 +74,20 @@ function comprobarConsultaDistrito(data)
   if (datosCache !== null)
   {
     //Existen datos cacheados
-    datosCache.map((dato) => {
-      if (esMismoDistrito(dato, data))
+    for (let cont = 0; cont < datosCache.length; cont++)
+    {
+      if (esMismoDistrito(datosCache[cont], data))
       {
         //Hay un dato en la caché para el mismo distrito en la misma semana
         //No hay que lanzar consulta sino que se muestran los datos de la consulta cacheada
-        return dato;
+        console.log("Dato compatible en la caché. Se usa el dato cacheado");
+        return datosCache[cont];
       }//if
-    });
+    }//for
   }//if
   //No existen datos cacheados o no se ha encontrado ninguno para el mismo distrito
   //Hay que lanzar consulta
+  console.log("No existen datos cacheados o no se ha encontrado ninguno para el mismo distrito. Hay que lanzar consulta");
   return null;
 }//comprobarConsultaDistrito
 
@@ -110,39 +113,49 @@ function rellenarDatosDistrito(datosLocalizacion)
 {
   queryString = "https://apifetcher.herokuapp.com/?id=f22c3f43-c5d0-41a4-96dc-719214d56968&filters=" + JSON.stringify({"municipio_distrito":"Madrid-" + datosLocalizacion.address.city_district});
   document.querySelector("#nombreDistrito").innerHTML = `${datosLocalizacion.address.road}, ${datosLocalizacion.address.house_number}. Distrito: ${datosLocalizacion.address.city_district}`;
-  fetch(queryString).then(d => d.json()).then(d =>  {
-    console.log(d);
-    //Creación del objeto de la caché
-    d.result.records.map((fecha) => {
-      data.labels.unshift(formateaFecha(fecha.fecha_informe.split("T")[0]));
-      data.series[0].unshift(parseFloat(fecha.tasa_incidencia_acumulada_ultimos_14dias));
-    });
-    let datoNuevoCache = new DistritoData(datosLocalizacion.address.city_district,
-                                          fechaHoy,
-                                          datosLocalizacion.address.road,
-                                          datosLocalizacion.address.house_number,
-                                          d.result.records[0].fecha_informe,
-                                          d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias,
-                                          data);
-
-                                          //console.log(datoNuevoCache);
-
-    let datosCache = JSON.parse(localStorage.getItem("cacheCovid19"));
-
-    if (datosCache !== null)
+  fetch(queryString).then(d => d.json()).then(d => 
     {
-      datosCache.push(datoNuevoCache);
-      localStorage.setItem("cacheCovid19", JSON.stringify(datosCache));
-    }//if
-    else
-    {
-      let cache = [];
-      cache.push(datoNuevoCache);
-      localStorage.setItem("cacheCovid19", JSON.stringify(cache));
-    }//else
+      //console.log(d);
+      console.log("Se crea el objeto para la caché")
+      //CREACIÓN DEL OBJETO DE LA CACHÉ
+      d.result.records.map((fecha) =>
+      {
+        data.labels.unshift(formateaFecha(fecha.fecha_informe.split("T")[0]));
+        data.series[0].unshift(parseFloat(fecha.tasa_incidencia_acumulada_ultimos_14dias));
+      });
+
+      let datoNuevoCache = new DistritoData(datosLocalizacion.address.city_district,
+                                            fechaHoy,
+                                            datosLocalizacion.address.road,
+                                            datosLocalizacion.address.house_number,
+                                            d.result.records[0].fecha_informe,
+                                            d.result.records[0].tasa_incidencia_acumulada_ultimos_14dias,
+                                            data);
+
+      console.log("Objeto para la caché creado a partir de la consulta");
+      console.log(datoNuevoCache);
+      console.log("Se almacena el objeto en la caché");
+      //ALMACENAMIENTO DEL OBJETO EN LA CACHÉ
+      let datosCache = JSON.parse(localStorage.getItem("cacheCovid19"));
+
+      if (datosCache !== null)
+      {
+        datosCache.push(datoNuevoCache);
+        localStorage.setItem("cacheCovid19", JSON.stringify(datosCache));
+        console.log("Objeto almacenado en la caché. La caché tiene más de un objeto");
+      }//if
+      else
+      {
+        let cache = [];
+        cache.push(datoNuevoCache);
+        localStorage.setItem("cacheCovid19", JSON.stringify(cache));
+        console.log("Objeto almacenado en la caché. La caché estaba vacía");
+      }//else
     
-    pintar(datoNuevoCache);
-  })
+      //REPRESENTACIÓN DE LOS DATOS
+      console.log("Se ordena generar el gráfico");
+      pintar(datoNuevoCache);
+    }).catch(() => {});
 }//rellenarDatosDistrito
 
 function pintar(datoNuevoCache)
@@ -199,6 +212,7 @@ function pintarDatos(data)
       // that is resolving to our chart container element. The Second parameter
       // is the actual data object. As a third parameter we pass in our custom options.
       new Chartist.Line('.ct-chart', data, options);
+      console.log("Gráfica pintada");
 }//pintarDatos
 
 function formateaFecha(fecha)
@@ -284,11 +298,20 @@ let mantenimientoCache = ()=> {
     if (!esMismaSemana(datosCache[0]))
     {
         localStorage.removeItem("cacheCovid19");
+        console.log("Caché no válida. Se borra la caché");
         ret = false;
     }
-    else ret = true;
+    else
+    {
+      console.log("Caché válida");
+      ret = true;
+    }//else
   }
-  else ret = false;
+  else
+  {
+    console.log("La caché está vacía");
+    ret = false;
+  }//else
 
   return ret;
 }
@@ -302,11 +325,12 @@ if (mantenimientoCache())
     fetch(queryString)
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
+            console.log("Se ha obtenido el distrito. Se determina si es necesario usar la caché");
             let datoAPintar = comprobarConsultaDistrito(data);
             if (datoAPintar)
             {
               //Se ha detectado una consulta para el mismo distrito en la misma semana
+              console.log("Se ordena representar la consulta para el dato cacheado");
               pintar(datoAPintar);
             }//if
             else
@@ -314,9 +338,9 @@ if (mantenimientoCache())
               //Hay que lanzar consulta pues no hay datos en la caché para utilizar
               rellenarDatosDistrito(data);
             }//else
+          }).catch(() => {
+            //No se ha podido cumplir la consulta del distrito
           });
-  }).catch(() => {
-    //No se ha podido cumplir la consulta del distrito
   })
 }//if
 else
@@ -327,6 +351,7 @@ else
     fetch(queryString)
           .then(response => response.json())
           .then(data => {
+              console.log("No hay caché. Hay que lanzar consulta")
               //Hay que lanzar consulta pues no hay datos en la caché para utilizar
               rellenarDatosDistrito(data);
           }).catch(() => {
