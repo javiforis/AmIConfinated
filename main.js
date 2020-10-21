@@ -112,9 +112,9 @@ function esMismaSemana(dato)
 function rellenarDatosDistrito(datosLocalizacion)
 {
   queryString = "https://apifetcher.herokuapp.com/?id=f22c3f43-c5d0-41a4-96dc-719214d56968&filters=" + JSON.stringify({"municipio_distrito":"Madrid-" + datosLocalizacion.address.city_district});
-  document.querySelector("#nombreDistrito").innerHTML = `${datosLocalizacion.address.road}, ${datosLocalizacion.address.house_number}. Distrito: ${datosLocalizacion.address.city_district}`;
   fetch(queryString).then(d => d.json()).then(d => 
     {
+      document.querySelector("#nombreDistrito").innerHTML = `${datosLocalizacion.address.road}, ${datosLocalizacion.address.house_number}. Distrito: ${datosLocalizacion.address.city_district}`;
       //console.log(d);
       console.log("Se crea el objeto para la caché")
       //CREACIÓN DEL OBJETO DE LA CACHÉ
