@@ -331,6 +331,7 @@ if (mantenimientoCache())
             {
               //Se ha detectado una consulta para el mismo distrito en la misma semana
               console.log("Se ordena representar la consulta para el dato cacheado");
+              document.querySelector("#nombreDistrito").innerHTML = `${datoAPintar.calle}, ${datoAPintar.numero}. Distrito: ${datoAPintar.distrito}`;
               pintar(datoAPintar);
             }//if
             else
